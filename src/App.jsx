@@ -447,7 +447,7 @@ export default function App() {
 
     setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % projects.length);
-    }, 400);
+    }, 200);
   };
 
   const currentColor = projects[currentIndex]?.dominantColor || '#333';
@@ -592,11 +592,6 @@ export default function App() {
       {/* Footer Controls */}
       {token && !loading && projects.length > 0 && !previewProject && (
         <div className="absolute bottom-6 md:bottom-8 left-0 right-0 z-40 flex flex-col items-center justify-center pointer-events-none">
-          <div className="flex gap-2 mb-3 md:mb-4">
-            <div className="w-1.5 h-1.5 rounded-full bg-white/80" />
-            <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
-            <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
-          </div>
           <p className="text-[10px] md:text-xs text-white/30 uppercase tracking-[0.2em] font-medium text-center leading-relaxed">
             Swipe to Navigate <br/>
             Hold to Preview
