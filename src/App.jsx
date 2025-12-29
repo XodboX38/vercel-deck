@@ -14,7 +14,7 @@ const copyToClipboard = (text) => {
 
 // --- COMPONENTS ---
 
-// 1. PREVIEW MODAL COMPONENT (New Feature)
+// 1. PREVIEW MODAL COMPONENT
 const PreviewModal = ({ data, onClose }) => {
   if (!data) return null;
 
@@ -23,9 +23,9 @@ const PreviewModal = ({ data, onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-6"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6"
     >
-      {/* Backdrop - heavily blurred & darkened */}
+      {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black/60 backdrop-blur-3xl transition-all duration-500"
         onClick={onClose}
@@ -37,12 +37,12 @@ const PreviewModal = ({ data, onClose }) => {
         animate={{ scale: 1, y: 0, opacity: 1 }}
         exit={{ scale: 0.9, y: 20, opacity: 0 }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="relative w-full max-w-lg bg-[#111]/90 border border-white/10 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+        className="relative w-full max-w-lg bg-[#111]/90 border border-white/10 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header / Actions */}
+        {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/5 backdrop-blur-md z-10">
-          <h3 className="font-bold text-white text-lg truncate pr-4">{data.name}</h3>
+          <h3 className="font-bold text-white text-base md:text-lg truncate pr-4">{data.name}</h3>
           <button 
             onClick={onClose}
             className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
@@ -51,9 +51,8 @@ const PreviewModal = ({ data, onClose }) => {
           </button>
         </div>
 
-        {/* Content - Scrollable */}
+        {/* Content */}
         <div className="overflow-y-auto flex-1 p-0 scrollbar-hide">
-          {/* Large Preview Image */}
           <div className="relative w-full aspect-video bg-black/50">
              <img 
                src={`https://image.thum.io/get/width/1200/crop/800/noanimate/${data.url}`} 
@@ -63,40 +62,37 @@ const PreviewModal = ({ data, onClose }) => {
              <div className="absolute inset-0 bg-gradient-to-t from-[#111] to-transparent opacity-60" />
           </div>
 
-          <div className="p-6 space-y-6">
+          <div className="p-5 md:p-6 space-y-6">
             <div className="space-y-2">
-              <label className="text-xs font-bold text-white/40 uppercase tracking-widest">About Project</label>
-              <p className="text-white/80 leading-relaxed text-sm md:text-base">
+              <label className="text-[10px] md:text-xs font-bold text-white/40 uppercase tracking-widest">About Project</label>
+              <p className="text-white/80 leading-relaxed text-sm">
                  {data.description || "A high-performance web application deployed on Vercel."}
               </p>
             </div>
 
             <div className="space-y-2">
-               <label className="text-xs font-bold text-white/40 uppercase tracking-widest">Tech Stack</label>
+               <label className="text-[10px] md:text-xs font-bold text-white/40 uppercase tracking-widest">Tech Stack</label>
                <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 rounded-full bg-white/10 border border-white/5 text-xs text-emerald-300 font-mono">
+                  <span className="px-2 py-1 md:px-3 md:py-1 rounded-full bg-white/10 border border-white/5 text-[10px] md:text-xs text-emerald-300 font-mono">
                     {data.framework || 'React'}
                   </span>
-                  <span className="px-3 py-1 rounded-full bg-white/10 border border-white/5 text-xs text-blue-300 font-mono">
+                  <span className="px-2 py-1 md:px-3 md:py-1 rounded-full bg-white/10 border border-white/5 text-[10px] md:text-xs text-blue-300 font-mono">
                     Vercel
-                  </span>
-                  <span className="px-3 py-1 rounded-full bg-white/10 border border-white/5 text-xs text-purple-300 font-mono">
-                    Production
                   </span>
                </div>
             </div>
           </div>
         </div>
 
-        {/* Footer Actions */}
-        <div className="p-6 pt-2 border-t border-white/5 bg-[#111]">
+        {/* Footer */}
+        <div className="p-4 md:p-6 pt-2 border-t border-white/5 bg-[#111]">
           <a 
             href={data.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-4 bg-white text-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-200 transition-transform active:scale-95 shadow-lg shadow-white/5"
+            className="w-full py-3 md:py-4 bg-white text-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-200 transition-transform active:scale-95 shadow-lg shadow-white/5 text-sm md:text-base"
           >
-            Open Full Site <Maximize2 size={18} />
+            Open Full Site <Maximize2 size={16} />
           </a>
         </div>
       </motion.div>
@@ -115,19 +111,19 @@ const Card = ({ data, active, onSwipe, onLongPress, index, total }) => {
   const [copied, setCopied] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [exitX, setExitX] = useState(0); // Control explicit exit animation
 
   // Gesture State
   const timerRef = useRef(null);
   const isLongPressRef = useRef(false);
 
-  // --- GESTURE LOGIC (Tap & Hold) ---
+  // --- GESTURE LOGIC ---
   const handlePointerDown = () => {
     if (!active) return;
     isLongPressRef.current = false;
-    // Start timer for long press (500ms)
     timerRef.current = setTimeout(() => {
       isLongPressRef.current = true;
-      onLongPress(data); // Trigger the preview
+      onLongPress(data);
     }, 500);
   };
 
@@ -139,7 +135,6 @@ const Card = ({ data, active, onSwipe, onLongPress, index, total }) => {
   };
 
   const handleDragStart = () => {
-    // If user starts dragging, cancel the long press timer instantly
     if (timerRef.current) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
@@ -152,11 +147,12 @@ const Card = ({ data, active, onSwipe, onLongPress, index, total }) => {
     const offset = info.offset.x;
     const velocity = info.velocity.x;
 
-    // Only swipe if it wasn't a long press event
     if (!isLongPressRef.current) {
       if (offset > 100 || velocity > 800) {
+        setExitX(1000); // Fly right
         onSwipe('right');
       } else if (offset < -100 || velocity < -800) {
+        setExitX(-1000); // Fly left
         onSwipe('left');
       }
     }
@@ -185,13 +181,12 @@ const Card = ({ data, active, onSwipe, onLongPress, index, total }) => {
         alignItems: 'center',
         justifyContent: 'center',
         cursor: active ? (isDragging ? 'grabbing' : 'grab') : 'default',
-        touchAction: 'none' // Important for gesture handling
+        touchAction: 'none'
       }}
-      drag={active ? "x" : false}
+      drag={active && exitX === 0 ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.7}
       
-      // Gesture Handlers
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
       onPointerLeave={handlePointerUp}
@@ -199,23 +194,32 @@ const Card = ({ data, active, onSwipe, onLongPress, index, total }) => {
       onDragEnd={handleDragEnd}
       
       animate={active 
-        ? { scale: 1, y: 0, opacity: 1 } 
-        : { scale: 0.92, y: 40, opacity: 0.5 }
+        ? (exitX !== 0 
+            ? { x: exitX, opacity: 0, scale: 1 } // Exit animation
+            : { x: 0, scale: 1, y: 0, opacity: 1 } // Normal state (snap back)
+          )
+        : { scale: 0.92, y: 40, opacity: 0.5, x: 0 } // Background state
       }
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
-      className="w-full h-full p-4 flex items-center justify-center select-none"
+      className="w-full h-full flex items-center justify-center select-none"
     >
-      <div className="relative w-[90vw] max-w-sm aspect-[3/4] bg-black/40 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden flex flex-col group transition-transform duration-300">
+      {/* UPDATED CARD DIMENSIONS:
+        - w-[85vw]: Slightly narrower than full screen on mobile.
+        - max-w-[320px]: Ensures it doesn't get huge on phablets.
+        - aspect-[3/5]: Taller aspect ratio for mobile to fit content.
+        - max-h-[65vh]: Prevents it from hitting browser bars.
+      */}
+      <div className="relative w-[85vw] max-w-[320px] md:max-w-[380px] aspect-[3/5] md:aspect-[3/4] max-h-[65vh] md:max-h-[700px] bg-black/40 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden flex flex-col group transition-transform duration-300">
         
         {active && (
-          <motion.div style={{ opacity: likeOpacity }} className="absolute top-8 left-8 z-20 border-4 border-emerald-400 text-emerald-400 font-bold text-2xl px-4 py-1 rounded-lg transform -rotate-12 bg-black/20 backdrop-blur-sm pointer-events-none">
+          <motion.div style={{ opacity: likeOpacity }} className="absolute top-8 left-8 z-20 border-4 border-emerald-400 text-emerald-400 font-bold text-xl md:text-2xl px-4 py-1 rounded-lg transform -rotate-12 bg-black/20 backdrop-blur-sm pointer-events-none">
             VISIT
           </motion.div>
         )}
 
         {/* Card Header */}
         <div 
-          className="h-1/2 w-full relative flex items-center justify-center overflow-hidden bg-black/50"
+          className="h-[45%] md:h-1/2 w-full relative flex items-center justify-center overflow-hidden bg-black/50"
           style={{ backgroundColor: imageError ? `${data.dominantColor}40` : '#000' }}
         >
           {!imageLoaded && !imageError && (
@@ -240,31 +244,32 @@ const Card = ({ data, active, onSwipe, onLongPress, index, total }) => {
             </>
           )}
           
-          <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-mono text-white/90 border border-white/10 uppercase tracking-wider z-20 shadow-lg">
+          <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] md:text-xs font-mono text-white/90 border border-white/10 uppercase tracking-wider z-20 shadow-lg">
             {data.framework || 'Vercel'}
           </div>
         </div>
 
-        {/* Card Content */}
-        <div className="flex-1 p-6 flex flex-col justify-between bg-gradient-to-b from-[#0a0a0a] to-black">
+        {/* Card Content - Compact padding for mobile */}
+        <div className="flex-1 p-5 md:p-6 flex flex-col justify-between bg-gradient-to-b from-[#0a0a0a] to-black">
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-white/40 tracking-widest uppercase">Project {index + 1} / {total}</span>
+            <div className="flex items-center justify-between mb-1.5 md:mb-2">
+              <span className="text-[10px] md:text-xs font-medium text-white/40 tracking-widest uppercase">Project {index + 1} / {total}</span>
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 leading-tight tracking-tight break-words">{data.name}</h2>
-            <p className="text-sm text-white/60 line-clamp-3 leading-relaxed">
+            {/* Smaller text sizes for mobile */}
+            <h2 className="text-xl md:text-3xl font-bold text-white mb-2 leading-tight tracking-tight break-words">{data.name}</h2>
+            <p className="text-xs md:text-sm text-white/60 line-clamp-3 leading-relaxed">
               {data.description || "Live Vercel Project. Tap and hold to preview details."}
             </p>
           </div>
 
-          <div className="space-y-3 md:space-y-4">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors group/url">
-              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/50 flex-shrink-0">
-                <Globe size={14} />
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 p-2.5 md:p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors group/url">
+              <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/10 flex items-center justify-center text-white/50 flex-shrink-0">
+                <Globe size={12} className="md:w-[14px] md:h-[14px]" />
               </div>
               <div className="flex-1 overflow-hidden">
-                <p className="text-xs text-white/40 mb-0.5">Public URL</p>
-                <p className="text-sm text-white font-mono truncate">{data.url.replace('https://', '')}</p>
+                <p className="text-[10px] md:text-xs text-white/40 mb-0.5">Public URL</p>
+                <p className="text-xs md:text-sm text-white font-mono truncate">{data.url.replace('https://', '')}</p>
               </div>
               <button 
                 onClick={handleCopy}
@@ -278,9 +283,9 @@ const Card = ({ data, active, onSwipe, onLongPress, index, total }) => {
               href={data.url} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="w-full py-4 bg-white text-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-100 active:scale-95 transition-all shadow-lg shadow-white/5"
+              className="w-full py-3 md:py-4 bg-white text-black font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-gray-100 active:scale-95 transition-all shadow-lg shadow-white/5 text-sm md:text-base"
             >
-              Visit Website <ExternalLink size={18} />
+              Visit Website <ExternalLink size={16} className="md:w-[18px] md:h-[18px]" />
             </a>
           </div>
         </div>
@@ -340,7 +345,6 @@ export default function App() {
 
   // --- LOCAL STORAGE LOGIC ---
   useEffect(() => {
-    // Check for saved token on mount
     const savedToken = localStorage.getItem('vercel_token');
     if (savedToken) {
         setToken(savedToken);
@@ -367,7 +371,6 @@ export default function App() {
       
       if (!projectsRes.ok) {
         if (projectsRes.status === 403 || projectsRes.status === 401) {
-            // If token is invalid, clear it from storage
             localStorage.removeItem('vercel_token');
             throw new Error("Invalid Token or Unauthorized.");
         }
@@ -421,7 +424,6 @@ export default function App() {
 
       setProjects(processed);
       setToken(apiToken);
-      // Save valid token to local storage
       localStorage.setItem('vercel_token', apiToken);
     } catch (err) {
       console.error(err);
@@ -445,7 +447,7 @@ export default function App() {
 
     setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % projects.length);
-    }, 200);
+    }, 400);
   };
 
   const currentColor = projects[currentIndex]?.dominantColor || '#333';
@@ -457,21 +459,21 @@ export default function App() {
       <Background color={currentColor} />
 
       {/* Nav / Header */}
-      <div className="absolute top-0 left-0 right-0 z-40 p-6 flex justify-between items-center bg-gradient-to-b from-black/60 to-transparent pointer-events-none">
+      <div className="absolute top-0 left-0 right-0 z-40 p-4 md:p-6 flex justify-between items-center bg-gradient-to-b from-black/60 to-transparent pointer-events-none">
         <div className="pointer-events-auto flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10 shadow-lg">
-            <Layout size={20} className="text-white" />
+          <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10 shadow-lg">
+            <Layout size={18} className="md:w-5 md:h-5 text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-lg leading-none tracking-tight">Vercel Deck</h1>
-            <p className="text-xs text-white/50 font-medium tracking-widest uppercase mt-1">Client View</p>
+            <h1 className="font-bold text-base md:text-lg leading-none tracking-tight">Vercel Deck</h1>
+            <p className="text-[10px] md:text-xs text-white/50 font-medium tracking-widest uppercase mt-1">Client View</p>
           </div>
         </div>
 
         {token && (
             <button 
                 onClick={clearToken}
-                className="pointer-events-auto px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md text-xs font-mono flex items-center gap-2 transition-all hover:scale-105 active:scale-95 text-white/60 hover:text-white"
+                className="pointer-events-auto px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md text-[10px] md:text-xs font-mono flex items-center gap-2 transition-all hover:scale-105 active:scale-95 text-white/60 hover:text-white"
                 title="Disconnect & Clear Token"
             >
                 <LogOut size={14} />
@@ -488,10 +490,10 @@ export default function App() {
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-md p-8 bg-black/60 backdrop-blur-xl border border-white/10 rounded-3xl mx-4 shadow-2xl"
+                className="w-[90vw] max-w-md p-6 md:p-8 bg-black/60 backdrop-blur-xl border border-white/10 rounded-3xl mx-4 shadow-2xl"
             >
-                <h2 className="text-2xl font-bold mb-2">Connect Vercel</h2>
-                <p className="text-white/60 text-sm mb-6">Enter your Vercel Access Token to fetch your projects directly from your browser.</p>
+                <h2 className="text-xl md:text-2xl font-bold mb-2">Connect Vercel</h2>
+                <p className="text-white/60 text-xs md:text-sm mb-6">Enter your Vercel Access Token to fetch your projects directly from your browser.</p>
                 
                 <form onSubmit={handleTokenSubmit} className="space-y-4">
                     <div className="relative">
@@ -500,7 +502,7 @@ export default function App() {
                             value={tokenInput}
                             onChange={(e) => setTokenInput(e.target.value)}
                             placeholder="Vercel Token (ey...)"
-                            className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-white/20 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-all font-mono text-sm"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl p-3 md:p-4 text-white placeholder-white/20 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-all font-mono text-sm"
                         />
                     </div>
                     
@@ -513,7 +515,7 @@ export default function App() {
 
                     <button 
                         type="submit"
-                        className="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+                        className="w-full bg-white text-black font-bold py-3 md:py-4 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
                     >
                         Load Projects <ArrowRight size={18} />
                     </button>
@@ -537,13 +539,12 @@ export default function App() {
         {token && !loading && projects.length > 0 && (
           <div className="relative w-full h-full flex items-center justify-center perspective-1000">
             
-            {/* When Preview is active, scale down main content slightly for depth */}
             <motion.div 
                className="relative w-full h-full flex items-center justify-center"
                animate={{ scale: previewProject ? 0.92 : 1, filter: previewProject ? 'blur(4px)' : 'blur(0px)' }}
                transition={{ duration: 0.4 }}
             >
-                {/* Render the stack: Back card first, then Front card */}
+                {/* Back card */}
                 {projects.length > 1 && (
                    <Card 
                       key={projects[nextIndex].id} 
@@ -554,12 +555,13 @@ export default function App() {
                    />
                 )}
 
+                {/* Front card */}
                 <Card 
                   key={projects[currentIndex].id}
                   data={projects[currentIndex]}
                   active={true}
                   onSwipe={handleSwipe}
-                  onLongPress={setPreviewProject} // Pass the handler
+                  onLongPress={setPreviewProject} 
                   index={currentIndex}
                   total={projects.length}
                 />
@@ -577,7 +579,7 @@ export default function App() {
         )}
       </div>
 
-      {/* PREVIEW OVERLAY (Animate Presence) */}
+      {/* PREVIEW OVERLAY */}
       <AnimatePresence>
         {previewProject && (
           <PreviewModal 
@@ -587,15 +589,15 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Controls / Instructions */}
+      {/* Footer Controls */}
       {token && !loading && projects.length > 0 && !previewProject && (
-        <div className="absolute bottom-8 left-0 right-0 z-40 flex flex-col items-center justify-center pointer-events-none">
-          <div className="flex gap-2 mb-4">
+        <div className="absolute bottom-6 md:bottom-8 left-0 right-0 z-40 flex flex-col items-center justify-center pointer-events-none">
+          <div className="flex gap-2 mb-3 md:mb-4">
             <div className="w-1.5 h-1.5 rounded-full bg-white/80" />
             <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
             <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
           </div>
-          <p className="text-xs text-white/30 uppercase tracking-[0.2em] font-medium text-center">
+          <p className="text-[10px] md:text-xs text-white/30 uppercase tracking-[0.2em] font-medium text-center leading-relaxed">
             Swipe to Navigate <br/>
             Hold to Preview
           </p>
