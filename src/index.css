@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Optional: Ensure dark mode background by default */
+body {
+  background-color: #000;
+  margin: 0;
+}
+
